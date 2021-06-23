@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Net.Mail;
 using System.ComponentModel;
+using System.Net;
 
 namespace SmtpClientSendApp
 {
     public class SimpleAsynchronousExample
     {
         static bool mailSent = false;
+        static string smtp_username = "";
+        static string smtp_password = "";
         private static void SendCompletedCallback(object sender, AsyncCompletedEventArgs e)
         {
             // Get the unique identifier for this asynchronous operation.
@@ -39,12 +42,35 @@ namespace SmtpClientSendApp
                 Console.Write("Enter smtp server: ");
                 Host = Console.ReadLine();
 
+
+                Console.WriteLine("#####################################################################################################################  Some SMTP servers require that the client be authenticated before the server sends email on its behalf. Type Yes if you want UseDefaultCredentials property to true when this SmtpClient object should, if requested by the server, authenticate using the default credentials of the currently logged on user.################################################################################################################### please press a key to continue ");
+                Console.ReadLine();
+                Console.WriteLine();
+
+                string UseDefaultCredentials = "";
+                Console.Write("To use UseDefaultCredentials please enter true or false ### Warning this is case sensitive ### : ");
+                UseDefaultCredentials = Console.ReadLine();
+
+                
+                 if (UseDefaultCredentials == "false")
+                {
+                    
+                    Console.Write("Enter smtp username: ");
+                    smtp_username = Console.ReadLine();
+
+                    
+                    Console.Write("Enter smtp password: ");
+                    smtp_password = Console.ReadLine();
+                }
+
+              
+
                 int Port = 0;
                 Console.Write("Enter smtp port: ");
                 Port = Convert.ToInt32(Console.ReadLine()); ;
 
                 bool EnableSsl = false;
-                Console.Write("Ssl enabled? true or false : ");
+                Console.Write("To enable SSL please enter true or false ### Warning this is case sensitive ### : ");
                 EnableSsl = Convert.ToBoolean(Console.ReadLine());
 
 
@@ -52,7 +78,17 @@ namespace SmtpClientSendApp
                 client.Host = Host;
                 client.Port = Port;
                 client.EnableSsl = EnableSsl;
-                client.UseDefaultCredentials = true;
+                
+
+                if (UseDefaultCredentials == "true") {
+                    client.UseDefaultCredentials = true;
+                }
+                else
+                 if (UseDefaultCredentials == "false")
+                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(smtp_username, smtp_password); 
+                }
 
                 // Create a mailing address that includes a UTF8 character
                 // in the display name.
@@ -94,7 +130,6 @@ namespace SmtpClientSendApp
                 }
                 // Clean up.
                 message.Dispose();
-                Console.WriteLine("Goodbye.");
                 Console.ReadKey();
 
             }
@@ -108,4 +143,5 @@ namespace SmtpClientSendApp
         }
     }
 
+  
 }
